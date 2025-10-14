@@ -176,3 +176,9 @@ resource "aws_db_instance" "mysql" {
 
   tags = { Name = "terraform-mysql" }
 }
+
+# Output 정의
+output "instance_ip" {
+  description = "EC2 인스턴스의 퍼블릭 IP"
+  value       = aws_instance.example.public_ip
+}
