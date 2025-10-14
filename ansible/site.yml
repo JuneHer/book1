@@ -1,0 +1,6 @@
+- name: Deploy Flask app with Template
+  hosts: web
+  become: true
+
+  roles:
+    - web

@@ -1,0 +1,7 @@
+env: dev
+db_host: terraform-mysql.czos9xo3nzg2.ap-northeast-2.rds.amazonaws.com
+db_user: admin
+db_password: "{{ lookup('env','DB_PASSWORD') }}"
+
+db_name: testdb
+app_port: 5000

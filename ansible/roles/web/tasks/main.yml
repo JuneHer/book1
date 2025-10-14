@@ -1,0 +1,45 @@
+# roles/web/tasks/main.yml
+- name: Install Python3 and pip
+  apt:
+    name: [python3, python3-pip]
+    state: present
+    update_cache: yes
+
+- name: Install Flask and MySQL connector
+  pip:
+    name:
+      - flask
+      - mysql-connector-python
+    state: present
+
+- name: Create app directory
+  file:
+    path: /home/ubuntu/flask-app
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+
+- name: Deploy Flask app from template
+  template:
+    src: app.py.j2      # roles/web/templates/app.py.j2
+    dest: /home/ubuntu/flask-app/app.py
+    owner: ubuntu
+    group: ubuntu
+    mode: '0644'
+  notify: Restart Flask service
+
+- name: Deploy systemd service file
+  template:
+    src: flask-app.service.j2
+    dest: /etc/systemd/system/flask-app.service
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart Flask service
+
+- name: Enable and start Flask service
+  systemd:
+    name: flask-app
+    state: started
+    enabled: yes
+    daemon_reload: yes
