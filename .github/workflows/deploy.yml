@@ -103,6 +103,9 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/terraform-key.pem
           chmod 600 ~/.ssh/terraform-key.pem
+          # Fix line endings and verify key format
+          sed -i 's/\r$//' ~/.ssh/terraform-key.pem
+          head -1 ~/.ssh/terraform-key.pem
           # Add EC2 instance to known_hosts
           ssh-keyscan -H ${{ steps.get-ip-ansible.outputs.instance_ip }} >> ~/.ssh/known_hosts
 
