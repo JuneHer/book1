@@ -9,7 +9,6 @@ terraform {
     bucket         = "terraform-state-juneher-1760513019"
     key            = "terraform.tfstate"
     region         = "ap-northeast-2"
-    use_lockfile   = true
     encrypt        = true
   }
 }
