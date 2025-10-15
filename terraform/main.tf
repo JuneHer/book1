@@ -196,3 +196,8 @@ output "instance_ip" {
   description = "EC2 인스턴스의 퍼블릭 IP"
   value       = aws_instance.example.public_ip
 }
+
+output "rds_endpoint" {
+  description = "RDS MySQL 엔드포인트"
+  value       = aws_db_instance.mysql.endpoint
+}
