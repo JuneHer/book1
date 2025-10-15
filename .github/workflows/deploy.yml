@@ -109,7 +109,9 @@ jobs:
       - name: Update Ansible Inventory
         run: |
           # Update inventory with dynamic IP
-          sed -i "s/ansible_host=.*/ansible_host=${{ steps.get-ip-ansible.outputs.instance_ip }}/" ansible/inventory.ini
+          sed -i "s/PLACEHOLDER_IP/${{ steps.get-ip-ansible.outputs.instance_ip }}/" ansible/inventory.ini
+          echo "Updated inventory.ini:"
+          cat ansible/inventory.ini
 
       - name: Run Ansible Playbook
         run: ansible-playbook -i inventory.ini site.yml
