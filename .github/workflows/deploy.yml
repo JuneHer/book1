@@ -36,9 +36,15 @@ jobs:
       - name: Get EC2 Instance IP
         id: get-ip
         run: |
-          INSTANCE_IP=$(terraform output -raw instance_ip)
+          cd terraform
+          terraform init
+          INSTANCE_IP=$(terraform output -raw instance_ip 2>/dev/null || echo "")
+          if [ -z "$INSTANCE_IP" ]; then
+            echo "Failed to get instance IP from terraform output"
+            exit 1
+          fi
           echo "instance_ip=$INSTANCE_IP" >> $GITHUB_OUTPUT
-        working-directory: ./terraform
+          echo "Instance IP: $INSTANCE_IP"
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -53,18 +59,34 @@ jobs:
       - name: Install Ansible
         run: sudo apt update && sudo apt install -y ansible
 
+      - name: Get EC2 Instance IP from Terraform
+        id: get-ip-ansible
+        run: |
+          cd terraform
+          terraform init
+          INSTANCE_IP=$(terraform output -raw instance_ip 2>/dev/null || echo "")
+          if [ -z "$INSTANCE_IP" ]; then
+            echo "Failed to get instance IP from terraform output"
+            exit 1
+          fi
+          echo "instance_ip=$INSTANCE_IP" >> $GITHUB_OUTPUT
+          echo "Instance IP: $INSTANCE_IP"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
       - name: Configure Ansible
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           # Add EC2 instance to known_hosts
-          ssh-keyscan -H ${{ needs.terraform.outputs.instance_ip }} >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ steps.get-ip-ansible.outputs.instance_ip }} >> ~/.ssh/known_hosts
 
       - name: Update Ansible Inventory
         run: |
           # Update inventory with dynamic IP
-          sed -i "s/ansible_host=.*/ansible_host=${{ needs.terraform.outputs.instance_ip }}/" inventory.ini
+          sed -i "s/ansible_host=.*/ansible_host=${{ steps.get-ip-ansible.outputs.instance_ip }}/" inventory.ini
 
       - name: Run Ansible Playbook
         run: ansible-playbook -i inventory.ini site.yml
