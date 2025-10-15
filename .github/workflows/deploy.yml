@@ -101,7 +101,7 @@ jobs:
       - name: Configure Ansible
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/terraform-key.pem
+          printf "%s" "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/terraform-key.pem
           chmod 600 ~/.ssh/terraform-key.pem
           # Fix line endings and verify key format
           sed -i 's/\r$//' ~/.ssh/terraform-key.pem
