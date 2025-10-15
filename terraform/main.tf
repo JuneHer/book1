@@ -150,20 +150,24 @@ resource "aws_security_group" "rds_sg" {
 }
 
 resource "aws_db_subnet_group" "rds_subnet" {
-  name       = "terraform-rds-subnet"
+  name       = "terraform-rds-subnet-${random_id.db_subnet_group_suffix.hex}"
   subnet_ids = [
     aws_subnet.private_a.id,
     aws_subnet.private_b.id
   ]
 
   tags = {
-    Name = "terraform-rds-subnet"
+    Name = "terraform-rds-subnet-${random_id.db_subnet_group_suffix.hex}"
   }
+}
+
+resource "random_id" "db_subnet_group_suffix" {
+  byte_length = 4
 }
 
 
 resource "aws_db_instance" "mysql" {
-  identifier        = "terraform-mysql"
+  identifier        = "terraform-mysql-${random_id.db_subnet_group_suffix.hex}"
   allocated_storage = 20
   engine            = "mysql"
   engine_version    = "8.0"
@@ -174,7 +178,7 @@ resource "aws_db_instance" "mysql" {
   vpc_security_group_ids = [aws_security_group.rds_sg.id]
   skip_final_snapshot    = true
 
-  tags = { Name = "terraform-mysql" }
+  tags = { Name = "terraform-mysql-${random_id.db_subnet_group_suffix.hex}" }
 }
 
 # Output 정의
