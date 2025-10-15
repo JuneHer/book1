@@ -38,9 +38,13 @@ jobs:
         run: |
           cd terraform
           terraform init
-          INSTANCE_IP=$(terraform output -raw instance_ip 2>/dev/null || echo "")
+          # terraform output을 파일로 저장하고 파싱
+          terraform output -raw instance_ip > /tmp/instance_ip.txt 2>/dev/null || true
+          INSTANCE_IP=$(cat /tmp/instance_ip.txt | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' | head -1)
           if [ -z "$INSTANCE_IP" ]; then
-            echo "Failed to get instance IP from terraform output"
+            echo "Failed to get valid instance IP"
+            echo "Raw output:"
+            cat /tmp/instance_ip.txt || echo "No output file"
             exit 1
           fi
           echo "instance_ip=$INSTANCE_IP" >> $GITHUB_OUTPUT
@@ -64,9 +68,13 @@ jobs:
         run: |
           cd terraform
           terraform init
-          INSTANCE_IP=$(terraform output -raw instance_ip 2>/dev/null || echo "")
+          # terraform output을 파일로 저장하고 파싱
+          terraform output -raw instance_ip > /tmp/instance_ip.txt 2>/dev/null || true
+          INSTANCE_IP=$(cat /tmp/instance_ip.txt | grep -E '^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$' | head -1)
           if [ -z "$INSTANCE_IP" ]; then
-            echo "Failed to get instance IP from terraform output"
+            echo "Failed to get valid instance IP"
+            echo "Raw output:"
+            cat /tmp/instance_ip.txt || echo "No output file"
             exit 1
           fi
           echo "instance_ip=$INSTANCE_IP" >> $GITHUB_OUTPUT
