@@ -14,6 +14,13 @@ jobs:
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.6.0
+
+      - name: Verify Terraform Installation
+        run: |
+          which terraform
+          terraform version
 
       - name: Terraform Init
         run: terraform init
