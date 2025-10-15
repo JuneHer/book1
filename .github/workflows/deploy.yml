@@ -101,10 +101,38 @@ jobs:
       - name: Configure Ansible
         run: |
           mkdir -p ~/.ssh
-          printf "%s" "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/terraform-key.pem
+          # Create SSH key from local file content
+          cat > ~/.ssh/terraform-key.pem << 'EOF'
+          -----BEGIN RSA PRIVATE KEY-----
+          MIIEpAIBAAKCAQEAsfnyAPrutmmOOYdZP6QqrPthTQ/wkv7gbQeVG8Fg7S8noSHi
+          dffUMxZY55p/OF+8LhAA0ab9pYY31gb2a96zPDs4VGXFle/FYHBUNOUM3br9Exa7
+          PhbVqMZSsy9EIkpDtQ/yYf1P8A1cwEka8Ge2jZoe9w/8knpKUyOJkQdgz2TRmqXO
+          fh2Rbm8BGLCG5Xt4oFWlPuTn5Rlc4c1Mm+BxXGQzNQ66ydvb9xzX9zWj17SzF1wf
+          a6r3+uX2G9xZFCfoyjLtmnFYquZEcQmwOoAdZN53nz7vkhrOMVcZBohk0k7mJ7eB
+          WHp29umn2GiVYiN22t1oyRdVwTHS82N1FNQ5pQIDAQABAoIBACSNhRqWbvif7Un7
+          dmUPvoQQjQdawrouBsHd0M4GhXWxPZ5mazB3Wem0KUZIAOD/KJL9Tm3Ask+QpV8b
+          xviYoI86SnNrA42r1QndiC3k7SONB/UnsgUqg29KbCnJB2FTh1xkjg96CzTuSaJk
+          YVgGtQOYJ8vuSJ186E7y+YoDzepKHssPcw10poksPHCTw4RCmvXC6tLVAVjIKrJz
+          M91GEDvaI5t9iLBgLgr74GxpSh0HR6H3vVf2EUBu0S6JMEe01+XVGuX1g34RWUWb
+          UMEET+mY3zRm5p/k8z5aVZDuzAEWqvISmXsJB3Scv1yO7YjVRwQUOR+9W1YLIrQi
+          IC7O1gECgYEA3+IU6BmLhDuISAzqQ3QYyDsTkyOwdEMdeHLl69E+asyzuxPci1o2
+          NpCVBGz1LI+BtYBVdd+CHf6Oo+ZRxtL8G6QwndzcFbp96RdRMVaxvnBAkIqqFBcM
+          Rp8tvxAf2z4IEOTJdqxYMhVh/pb9BDgxRpq+nIOvFbgXvsQROVRx6+ECgYEAy4H5
+          2K6F9JdYu2OQUqhs0nifQRa4NtAiUj0wcb9psyToZXWyOE0D75d84enFtI5kWib5
+          5PgzU7zkL33/ctFQ70GbIwZhk9EzMP7MFCWrNJ7JZ1KLXb91U4wfFSBlZoJ/92fz
+          OTNZ/IASMsdFyvyz4lJRNtsn+4BYEU7NKxKkZkUCgYALPFRiRY3r5/Tx8Lv9AKGR
+          wu07kCn127xp5BJH4GtqfrVyaQ/DapaX7G+eFj3Dq7wNuNARJ1NnX/QWo6Ns//+o
+          /3d1JLVi3cYd4Y6wlDI9ZXLIDj103qc+EBUCprOClD1hY6n8q6+Na+dMGJXAFXXb
+          nj58qlsqEuAWMc7Per5w4QKBgQChiyiAV3FgSi+WeJ9c7fOMU1HfgiBy6l8ENyxY
+          buCB4z9TIs15IbGJJBBu6HoXLJz+b0gY+OkNhLkB9hur0fpUIhj7AZq9kuf28Zug
+          NpKj75Pin8Sfg1aoHmeiBphXeioIg4ywEFJTPHq1sjd1vYkxk7SCPg+L9kJyYsI8
+          eczknQKBgQDEBN2W06G0g4LJXI1P68tWU2pg9EkTj9dbLH5BHLt53b66J0hw0LVy
+          B1iBEHHWVkQ1buGqv1SBkIOBg6iNNxrczM0eCaUlgpqx7WXuWNVsYaOq5Yo1nrsC
+          qFGRXfxAhr235opJejX/lVSsX82ajtdeaGwWzNrVQ9741oeE4i/Miw==
+          -----END RSA PRIVATE KEY-----
+          EOF
           chmod 600 ~/.ssh/terraform-key.pem
-          # Fix line endings and verify key format
-          sed -i 's/\r$//' ~/.ssh/terraform-key.pem
+          # Verify key format
           head -1 ~/.ssh/terraform-key.pem
           # Add EC2 instance to known_hosts
           ssh-keyscan -H ${{ steps.get-ip-ansible.outputs.instance_ip }} >> ~/.ssh/known_hosts
